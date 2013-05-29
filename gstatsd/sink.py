@@ -62,14 +62,11 @@ class GraphiteSink(Sink):
             vals = sorted(vals)
             vmin = vals[0]
             vmax = vals[-1]
-            mean = vmin
+            mean = sum(vals) / num
             max_at_thresh = vmax
             if num > 1:
                 idx = round((pct / 100.0) * num)
-                tmp = vals[:int(idx)]
-                if tmp:
-                    max_at_thresh = tmp[-1]
-                    mean = sum(tmp) / idx
+                max_at_thresh = vals[:int(idx)][-1]
 
             key = 'stats.timers.%s' % key
             buf.write('%s.mean %f %d\n' % (key, mean, now))
@@ -99,4 +96,3 @@ class GraphiteSink(Sink):
                 sock.close()
             except Exception, ex:
                 self.error(E_SENDFAIL % ('graphite', host, ex))
-
